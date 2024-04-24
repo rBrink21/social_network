@@ -1,0 +1,83 @@
+@rendermode InteractiveServer
+@using social_network.Model
+@using social_network.Data
+@inject UserService userService;
+
+@if (!createAccountForm)
+{
+    <form action="" class="w-25 mt-5" autocomplete="off">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="username" placeholder="example">
+            <label for="username">Username</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" placeholder="example">
+            <label for="password">Password</label>
+        </div>
+        <button type="button" class="btn btn-success w-100 mb-3">Log in</button>
+        <button @onclick="ToggleForms" type="button" class="btn btn-secondary w-100">Create Account</button>
+    </form>
+}
+
+@if (createAccountForm)
+{
+    <EditForm Model="userToCreate" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator/>
+        
+        <h3 class="text-center">Create Account</h3>
+
+        <div class="form-floating mb-3">
+            <InputText class="form-control" id="firstName" placeholder="John" @bind-Value="userToCreate.firstName"/>
+            <label for="firstName">First Name</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText class="form-control" id="lastName" placeholder="Doe" @bind-Value="userToCreate.lastName"/>
+            <label for="lastName">Last Name</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText class="form-control" id="username" placeholder="example" @bind-Value="userToCreate.username"/>
+            <label for="username">Username</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText class="form-control" id="email" placeholder="example@example.com" @bind-Value="userToCreate.email"/>
+            <label for="email">Email Address</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText type="password" class="form-control" id="password" placeholder="example" @bind-Value="userToCreate.password"/>
+            <label for="password">Password</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputDate class="form-control" id="birthdate" placeholder="Birth Date" @bind-Value="userToCreate.birthDate"/>
+            <label for="birthdate">Birth Date</label>
+        </div>
+        <ValidationSummary />
+        <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
+        <button @onclick="ToggleForms" type="button" class="btn btn-danger w-100">Return to Log-in</button>
+
+    </EditForm>
+}
+
+@code {
+    bool createAccountForm = false;
+
+    private User userToCreate = new User();
+
+    private void HandleValidSubmit()
+    {
+        userService.AddUser(userToCreate);
+    }
+    
+    
+    
+    
+    private void ToggleForms()
+    {
+        createAccountForm = !createAccountForm;
+    }
+
+}

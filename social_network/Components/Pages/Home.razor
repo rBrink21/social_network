@@ -1,7 +1,35 @@
 ﻿@page "/"
+@using social_network.Components.Reusable
+@rendermode InteractiveServer
+<!--
+Welcome Page
+Display a friendly banner
+Display a brief description of what your site is about
+Display a login fields that are inherited from the login page html
+Include a footer and header
+ -->
+<PageTitle>Welcome</PageTitle>
 
-<PageTitle>Home</PageTitle>
+<div class="container-fluid">
+    <header>
+        <div id="banner" class="bg-secondary bg-opacity-25">
+            <h1 class="text-center text-primary fw-bold pt-4"> <i class="bi bi-book me-2"></i>The Face Book</h1>
+        </div>
+        <div>
+            <h3 class="text-center mt-1 text-secondary">A website to connect with your friends!</h3>
+        </div>
+    </header>
+    <div class="d-flex align-content-center justify-content-center">
+        <LoginForm></LoginForm>
+    </div>
+    
+    <footer class="bg-secondary fixed-bottom text-secondary-emphasis bg-opacity-10 fs-6">
+        Copyright Roy ten Brink LLC The information provided on this site is not legal advice, does not constitute a lawyer referral service, and no attorney-client or confidential relationship is or will be formed by use of the site.
+    </footer>
+</div>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+@code
+{
+ 
+}
