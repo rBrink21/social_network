@@ -1,0 +1,14 @@
+@if (active)
+{
+    <div class="alert alert-@alertClass">
+        @alertMsg <button type="button" @onclick="() => {active = false; }" class="btn-close float-end"></button>
+    </div>
+}
+
+@code {
+    [Parameter] 
+    public string alertMsg { get; set; }
+    [Parameter]
+    public string alertClass { get; set; }
+    private bool active { get; set; } = true;
+}

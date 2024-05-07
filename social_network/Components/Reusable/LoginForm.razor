@@ -1,27 +1,38 @@
 @rendermode InteractiveServer
 @using social_network.Model
 @using social_network.Data
+@using social_network.Components.Reusable
 @inject UserService userService;
 
-@if (!createAccountForm)
+@if (state == FormState.LoginForm)
 {
     <form action="" class="w-25 mt-5" autocomplete="off">
         <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="username" placeholder="example">
+            <input @bind="loginUsername" type="text" class="form-control" id="username" placeholder="example">
             <label for="username">Username</label>
         </div>
         <div class="form-floating mb-3">
-            <input type="password" class="form-control" id="password" placeholder="example">
+            <input @bind="loginPassword" type="password" class="form-control" id="password" placeholder="example">
             <label for="password">Password</label>
         </div>
-        <button type="button" class="btn btn-success w-100 mb-3">Log in</button>
+        @if (loginSuccessful)
+        {
+            <Alert alertClass="success" alertMsg="Log in successful!"/>
+        }
+        @if (loginError)
+        {
+            <Alert alertClass="danger" alertMsg="User not found or wrong password"></Alert>
+        }
+        
+        
+        <button @onclick="Login" type="button" class="btn btn-success w-100 mb-3">Log in</button>
         <button @onclick="ToggleForms" type="button" class="btn btn-secondary w-100">Create Account</button>
     </form>
 }
 
-@if (createAccountForm)
+@if (state == FormState.CreateAccountForm)
 {
-    <EditForm Model="userToCreate" OnValidSubmit="HandleValidSubmit">
+    <EditForm Model="userToCreate" OnValidSubmit="HandleValidSubmit" autocomplete="off">
         <DataAnnotationsValidator/>
         
         <h3 class="text-center">Create Account</h3>
@@ -56,28 +67,84 @@
             <label for="birthdate">Birth Date</label>
         </div>
         <ValidationSummary />
+        @if (errorMsg)
+        {
+            <div class="alert alert-danger mb-3">
+                @errorText <button type="button" class="btn-close float-end" @onclick="() => { errorMsg = false;}"></button>
+            </div>
+        }
+        
         <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
         <button @onclick="ToggleForms" type="button" class="btn btn-danger w-100">Return to Log-in</button>
-
     </EditForm>
 }
 
-@code {
-    bool createAccountForm = false;
+@if (state == FormState.Loading)
+{
+    <div class="spinner-border" role="status">
+    </div>
+}
 
+@code {
+    bool errorMsg = false;
+    bool loginSuccessful;
+    bool loginError;
+    FormState state = FormState.LoginForm;
+    enum FormState
+    {
+        LoginForm,
+        CreateAccountForm,
+        Loading,
+    }
+    
+    private string loginUsername;
+    private string loginPassword;
+    
+    string errorText = "";
     private User userToCreate = new User();
 
     private void HandleValidSubmit()
     {
-        userService.AddUser(userToCreate);
+        
+        if (!userService.UsernameExists(userToCreate.username))
+        {
+            userService.AddUser(userToCreate);
+        }
+        else
+        {
+            errorMsg = true;
+            errorText = "User already exists!";
+        }
     }
-    
-    
+
+    private void Login()
+    {
+        User? user;
+        user = userService.FindUserByUsername(loginUsername);
+        if (user != null)
+        {
+            if (user.password == loginPassword)
+            { 
+                userService.loggedInUser = user;
+                loginSuccessful = true;
+                return;
+            }
+            
+        }
+        loginError = true;
+    }
     
     
     private void ToggleForms()
     {
-        createAccountForm = !createAccountForm;
+        if (state == FormState.CreateAccountForm)
+        {
+            state = FormState.LoginForm;
+        }
+        if (state == FormState.LoginForm)
+        {
+            state = FormState.CreateAccountForm;
+        }
     }
 
 }
