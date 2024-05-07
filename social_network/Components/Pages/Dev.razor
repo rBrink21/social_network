@@ -1,0 +1,25 @@
+@page "/Dev"
+@using social_network.Data;
+@using social_network.Components.Reusable
+@using social_network.Model
+@inject SessionService session;
+@rendermode InteractiveServer
+
+@inject PostService postService;
+<h3>Dev</h3>
+
+<ul class="list-group-flush">
+    @foreach (PostData post in postService.GetAllPosts())
+    {
+        <Post post="@post"></Post>
+    }
+</ul>
+<!--Post Modal -->
+<div>
+    <PostForm></PostForm>
+</div>
+     
+
+
+@code {
+    }

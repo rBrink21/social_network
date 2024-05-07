@@ -3,6 +3,8 @@
 @using social_network.Data
 @using social_network.Components.Reusable
 @inject UserService userService;
+@inject NavigationManager nav;
+@inject SessionService session;
 
 @if (state == FormState.LoginForm)
 {
@@ -125,8 +127,12 @@
         {
             if (user.password == loginPassword)
             { 
-                userService.loggedInUser = user;
+                session.loggedInUser = user.username;
                 loginSuccessful = true;
+                InvokeAsync(() =>
+                {
+                    nav.NavigateTo("/Feed");
+                });
                 return;
             }
             
@@ -137,14 +143,12 @@
     
     private void ToggleForms()
     {
-        if (state == FormState.CreateAccountForm)
+        state = state switch
         {
-            state = FormState.LoginForm;
-        }
-        if (state == FormState.LoginForm)
-        {
-            state = FormState.CreateAccountForm;
-        }
+            FormState.CreateAccountForm => FormState.LoginForm,
+            FormState.LoginForm => FormState.CreateAccountForm,
+            _ => state
+        };
     }
 
 }

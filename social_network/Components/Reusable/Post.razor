@@ -1,0 +1,12 @@
+@using social_network.Model
+
+<li class="list-group-item bg-success bg-opacity-25 mb-3 ">
+    <div class="p-2 rounded-1 w-auto">
+        <h3>@post.textContent</h3>
+        <h6 class="text-secondary"><NavLink>@post.username</NavLink> on @post.postDate</h6>
+    </div>
+</li>
+
+@code {
+    [Parameter] public PostData post { get; set; }
+}

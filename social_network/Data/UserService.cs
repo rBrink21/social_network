@@ -5,7 +5,6 @@ namespace social_network.Data;
 public class UserService 
 {
     private MyContext context;
-    public User loggedInUser;
     public UserService(MyContext _context) 
     {
         context = _context;

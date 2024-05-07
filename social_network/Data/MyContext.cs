@@ -10,4 +10,5 @@ public class MyContext : DbContext
     }
     
     public DbSet<User> users { get; set; }
+    public DbSet<PostData> posts { get; set; }
 }
