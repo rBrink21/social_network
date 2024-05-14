@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using social_network.Model;
 
 namespace social_network.Data;
@@ -20,9 +21,14 @@ public class UserService
     // God i love LINQ
     public User? FindUserByUsername(string username)
     {
-        return context.users.FirstOrDefault(u => u.username == username);
+        return context.users.Include(u => u.friends).FirstOrDefault(u => u.username == username);
     }
 
+    public async Task<User?> FindUserByUsernameAsync(string username)
+    {
+        return await context.users.Include(u => u.friends).FirstOrDefaultAsync(u => u.username == username);
+    }
+    
     public bool UsernameExists(string username)
     {
         return context.users.Any(u => u.username == username);
@@ -36,5 +42,10 @@ public class UserService
             return user.password == password;
         }
         return false;
+    }
+
+    public void SaveChanges()
+    {
+        context.SaveChanges();
     }
 }

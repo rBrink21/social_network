@@ -6,12 +6,12 @@
 
 @inject PostService postService;
 <EditForm FormName="newPost" Model="newPost" OnValidSubmit="HandleValidPostCreation" autocomplete="off">
-    <div class="form-floating mb-3">
+    <div class="form-floating mb-3 input-group mt-3">
         <InputTextArea rows="3" class="form-control" id="postContent" placeHolder="Something Cool!" @bind-Value="newPost.textContent"></InputTextArea>
         <label for="postContent">Post Content</label>
+        <button type="submit" class="btn btn-success w-25">Post</button>
     </div>
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-primary">Save changes</button>
+    
     <ValidationSummary/>
 </EditForm>
 @code {
@@ -21,6 +21,11 @@
 
     private void HandleValidPostCreation()
     {
+        if (newPost.textContent.Length < 1)
+        {
+            return;
+        }
+        
         newPost.postDate = DateTime.Now;
         newPost.username = session.loggedInUser;
         if (session.loggedInUser != null)
@@ -32,6 +37,7 @@
             newPost.username = "debug";
             postService.CreatePost(newPost);
         }
+        StateHasChanged();
     }
 }
 

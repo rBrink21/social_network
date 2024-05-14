@@ -1,0 +1,150 @@
+@page "/Friends"
+@using social_network.Components.Reusable
+@using social_network.Data
+@using social_network.Model
+@using social_network.Components.Reusable
+@using System.Diagnostics
+@inject UserService userService;
+@inject SessionService session;
+@inject NavigationManager nav;
+@rendermode InteractiveServer
+
+<style>
+img {
+    max-height: 100px;
+    max-width: 100px;
+}
+</style>
+
+
+<NavigationBar></NavigationBar>
+<div class="mt-3 row">
+    <div class="col col-6">
+        <h3>Your friends</h3>
+        @foreach (User friend in loggedInUser.friends)
+        {
+            <div class="d-flex mb-3 bg-primary-subtle rounded-5 bg-opacity-25 p-3 w-50">
+                <img class="rounded-circle me-4" src="@friend.GetProfilePic()"/>
+                <h5 class="me-4 align-self-center me2">@friend.username</h5>
+                <button class="ms-1 btn btn-danger align-self-center" @onclick="() => { RemoveFriend(friend); }">
+                    Remove
+                </button>
+                <button class="btn btn-info align-self-center" data-bs-toggle="modal" data-bs-target="#friendModal" @onclick="() => {selectedUser = friend; }">
+                    Profile
+                </button>
+            </div>
+        }
+    </div>
+    <div class="col-3">
+        <h3>Find Someone!</h3>
+        <div class="input-group">
+            <div class="form-floating w-25">
+                <input @bind="username" id="search" type="text" class="form-control" placeholder="placeholder" autocomplete="off">
+                <label for="search">Search</label>
+            </div>
+            <button @onclick="SearchForUser" type="button" class="btn btn-outline-primary w-25">Button</button>
+        </div>
+        @if (displayResults)
+        {
+            <h3>Display Results!</h3>
+            @foreach (User user in usersToDisplay)
+            {
+                <div class="d-flex mb-3 bg-primary-subtle rounded-5 bg-opacity-25 p-3 w-100">
+                    <img class="rounded-circle me-4" src="@user.GetProfilePic()"/>
+                    <h5 class="me-4 align-self-center me2">@user.username</h5>
+                    <button class="ms-1 btn btn-success align-self-center" @onclick="() => { AddFriend(user); }">
+                        Add Friend
+                    </button>
+                </div>
+            }
+        }
+    </div>
+
+    
+    <!-- Friend Modal-->
+    <div class="modal fade" id="friendModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="friendModalLabel">Your friend's profile</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+              @if (selectedUser != null)
+              {
+                  <UserProfile profileOwner="selectedUser"></UserProfile>
+              }
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+
+@code {
+    bool displayResults = false;
+    User? loggedInUser;
+    string username;
+    List<User> usersToDisplay = new List<User>();
+    User? selectedUser;
+    protected override void OnInitialized()
+    {
+        loggedInUser = userService.FindUserByUsername(session.loggedInUser);
+        if (loggedInUser == null)
+        {
+            nav.NavigateTo("/");
+        }
+    }
+
+
+    private async void SearchForUser()
+    {
+        User? userFound = await userService.FindUserByUsernameAsync(username);
+        if (userFound != null)
+        {
+            usersToDisplay.Add(userFound);
+            displayResults = true;
+        }
+        
+    }
+
+    private void AddFriend(User userToAdd)
+    {
+        if (loggedInUser != null)
+        {
+            
+            if (loggedInUser.friends.Contains(userToAdd) || loggedInUser == userToAdd)
+            {
+                return;
+            }
+            //DB
+            loggedInUser.friends.Add(userToAdd);
+            userToAdd.friends.Add(loggedInUser);
+            userService.SaveChanges();
+            
+            //UI
+            displayResults = false;
+            usersToDisplay = new List<User>();
+        }
+    }
+
+    private void RemoveFriend(User userToRemove)
+    {
+        if (!loggedInUser.friends.Contains(userToRemove))
+        {
+            return;
+        }
+
+        loggedInUser.friends.Remove(userToRemove);
+        userToRemove.friends.Remove(loggedInUser);
+        userService.SaveChanges();
+
+        displayResults = false;
+        usersToDisplay = new List<User>();
+
+    }
+
+}

@@ -1,0 +1,42 @@
+@page "/Profile"
+@using social_network.Model
+@using social_network.Data
+@using social_network.Components.Reusable
+@inject UserService users;
+@inject SessionService session;
+
+
+<NavigationBar></NavigationBar>
+<div class="mt-3">
+    <UserProfile profileOwner="@userToDisplay"></UserProfile>
+</div>
+
+
+
+@code {
+    User testUser = new User();
+    User? userToDisplay = new User();
+    
+    protected override void OnInitialized()
+    {
+        userToDisplay = users.FindUserByUsername(session.loggedInUser);
+        if (userToDisplay == null)
+        {
+            userToDisplay = testUser;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        testUser.userID = Guid.NewGuid();
+        testUser.username = "TestGuy42";
+        testUser.email = "123@123.com";
+        testUser.birthDate = DateTime.Now;
+        testUser.firstName = "Test";
+        testUser.lastName = "Guy";
+        
+        
+        
+    }
+
+}

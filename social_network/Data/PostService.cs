@@ -21,4 +21,9 @@ public class PostService
         {
             return context.posts.ToList();
         }
+
+    public List<PostData> GetPostsFromUser(string username)
+    {
+        return context.posts.Where(p => p.username == username).ToList();
+    }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace social_network.Model;
@@ -21,5 +22,21 @@ public class User
     public string password { get; set; }
     [Required]
     public DateTime birthDate { get; set; }
-    
+    [MaxLength(100)]
+    public string? profilePictureUrl { get; set; }
+
+    public List<User> friends { get; set; } = new List<User>();
+
+
+    public string GetProfilePic()
+    {
+        if (profilePictureUrl == null)
+        {
+            return "https://i.imgur.com/g8mfuk3.png";
+        }
+        else
+        {
+            return profilePictureUrl;
+        }
+    }
 }

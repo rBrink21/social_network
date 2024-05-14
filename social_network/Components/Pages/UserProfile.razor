@@ -1,0 +1,76 @@
+@page "/UserProfile"
+@using social_network.Model
+@using social_network.Data
+@using social_network.Components.Reusable
+@rendermode InteractiveServer
+@inject PostService posts;
+@inject SessionService session;
+@inject UserService userService;
+<style>
+    img {
+    max-width: 100px;
+    max-height: 100px;
+    }
+</style>
+
+@if (profileOwner != null)
+{
+    <div class="container-fluid bg-primary bg-opacity-10 row">
+        <div class="col-5 me-1 mt-3 d-flex flex-column mb-5" style="max-height: 100px">
+            <div class="d-flex flex-row">
+                <div class="d-flex flex-column">
+                    <div class="d-flex flex-row">
+                       <img class="rounded-circle" src="@profileOwner.GetProfilePic()" alt="profile picture">
+                        <div class="mt-1 ms-3 align-self-center ">
+                            <h2 class="ms-1 text-secondary-emphasis">@profileOwner.firstName @profileOwner.lastName</h2>
+                            <h6 class="text-center ms-1 text-secondary">@profileOwner.username</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-row mb-3">
+                @if (profileOwner.username == session.loggedInUser)
+                {
+                    <button @onclick="() => {changeProfilePicDialogOpen = !changeProfilePicDialogOpen;}" class="btn btn-outline-info mt-3">Change Profile Picture</button>
+                }
+                @if (changeProfilePicDialogOpen)
+                {
+                    <div class="input-group align-self-center">
+                        <input @bind="newUrl" id="url" class="ms-2 form-control" type="text" placeholder="Image URL"/>
+                        <button @onclick="UpdateURL" class="btn btn-success">Change</button>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="mt-5">
+            <h3 class="mb-3">Posts from this user</h3>
+            @foreach (PostData post in posts.GetPostsFromUser(profileOwner.username))
+            {
+                <Post post="post"></Post>
+            }
+        </div>
+    </div>
+}
+else
+{
+    
+}
+
+@code {
+    [Parameter] public User? profileOwner { get; set; }
+    bool changeProfilePicDialogOpen;
+    string newUrl;
+
+    private void UpdateURL()
+    {
+        User? userToUpdate = userService.FindUserByUsername(profileOwner.username);
+        
+        if (userToUpdate != null) 
+        {
+            userToUpdate.profilePictureUrl = newUrl;
+            userService.SaveChanges();
+            StateHasChanged();
+        }
+    }
+}
