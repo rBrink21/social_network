@@ -1,26 +1,56 @@
+@using social_network.Data
+@using social_network.Model
+@inject ThemeService themeService;
+@inject NavigationManager nav;
+@rendermode InteractiveServer
+
 <nav class="navbar navbar-expand bg-body-tertiary w-100">
     <div class="container-fluid">
         <a class="navbar-brand text-primary-emphasis" href="#">
             <i class="bi bi-book me-2"></i> The Face Book
         </a>
-         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                      <span class="navbar-toggler-icon"></span>
-                    </button>
-         <div class="collapse navbar-collapse" id="navbarNav">
-              <ul class="navbar-nav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
                 <li class="nav-item">
-                  <NavLink class="nav-link" aria-current="page" href="/Feed" Match="NavLinkMatch.All"><i class="bi bi-house-fill"></i> Home</NavLink>
+                    <NavLink class="nav-link" aria-current="page" href="/Feed" Match="NavLinkMatch.All"><i class="bi bi-house-fill"></i> Home</NavLink>
                 </li>
                 <li class="nav-item">
                     <NavLink class="nav-link" href="/Friends" Match="NavLinkMatch.All"><i class="bi bi-people"></i> Friends</NavLink>
                 </li>
                 <li class="nav-item">
-                  <NavLink class="nav-link" href="/Profile" Match="NavLinkMatch.All"> <i class="bi bi-person-fill"></i> Profile</NavLink>
+                    <NavLink class="nav-link" href="/Profile" Match="NavLinkMatch.All"> <i class="bi bi-person-fill"></i> Profile</NavLink>
                 </li>
-              </ul>
-            </div>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Theme
+                    </a>
+                    <ul class="dropdown-menu">
+                        @foreach (Theme theme in Enum.GetValues(typeof(Theme)))
+                        {
+                            <li onclick="refreshPage()">
+                                <button  class="dropdown-item" @onclick="() => { themeService.currentTheme = theme; StateHasChanged();}">@theme.ToString() </button>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
+<script>
+    function refreshPage(){
+        location.reload();
+        }
+</script>
 @code {
-    
+
+    private void ChangeTheme(Theme theme)
+    {
+        themeService.currentTheme = theme;
+        StateHasChanged();
+        nav.NavigateTo(nav.Uri,forceLoad:true);
+    }
 }

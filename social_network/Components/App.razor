@@ -1,11 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@using social_network.Data
+@using social_network.Model
+@inject ThemeService themeService;
+
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <base href="/"/>
-    <link rel="stylesheet" href="bootstrap/bootstrap.min.css"/> 
+    <link rel="stylesheet" href="@themeService.currentTheme.ToCSS()"/> 
     <link rel="stylesheet" href="app.css"/>
     <link rel="stylesheet" href="social_network.styles.css"/>
     <link rel="icon" type="image/png" href="favicon.png"/>
@@ -20,3 +24,10 @@
 </body>
 
 </html>
+
+
+@code{
+    
+    
+
+}

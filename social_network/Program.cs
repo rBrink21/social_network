@@ -10,6 +10,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = database.db"));
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<PostService>();
+builder.Services.AddSingleton<ThemeService>();
 builder.Services.AddSingleton<SessionService>();
 var app = builder.Build();
 
